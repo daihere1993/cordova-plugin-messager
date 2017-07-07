@@ -2,8 +2,12 @@
 <plugin id="cordova-plugin-messager" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>cordova-plugin-messager</name>
     <js-module name="cordova-plugin-messager" src="www/cordova-plugin-messager.js">
-        <clobbers target="cordova.plugins.cordova-plugin-messager" />
+        <clobbers target="cordova.plugins.messager" />
     </js-module>
+
+    <!-- android -->
+    <platform name="android">
+    </platform>
     
     <!-- ios -->
     <platform name="ios">

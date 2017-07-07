@@ -1,0 +1,26 @@
+{
+  "name": "cordova-plugin-messager",
+  "version": "1.0.0",
+  "description": "A cordova plugin about message subscribe in app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "cordova": {
+    "id": "cordova-plugin-messager",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daihere1993/cordova-plugin-messager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/daihere1993/cordova-plugin-messager/issues"
+  },
+  "homepage": "https://github.com/daihere1993/cordova-plugin-messager#readme"
+}
