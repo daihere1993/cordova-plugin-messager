@@ -4,4 +4,22 @@
     <js-module name="cordova-plugin-messager" src="www/cordova-plugin-messager.js">
         <clobbers target="cordova.plugins.cordova-plugin-messager" />
     </js-module>
+    
+    <!-- ios -->
+    <platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="Messager">
+                <param name="ios-package" value="MQTTMessager"></param>
+                <param name="onload" value="true"></param>
+            </feature>
+        </config-file>
+
+        <!-- plugin source code -->
+        <header-file src="src/ios/MQTTMessager.h"></header-file>
+        <source-file src="src/ios/MQTTMessager.m"></source-file>
+
+        <!-- MQTTKit Library -->
+        <header-file src="src/ios/MQTTKit/MQTTKit.h">
+        <source-file src="src/ios/libMQTTKit.a" framework="true"></source-file>
+    </platform>
 </plugin>
