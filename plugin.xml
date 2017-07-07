@@ -23,7 +23,7 @@
         <source-file src="src/ios/MQTTMessager.m"></source-file>
 
         <!-- MQTTKit Library -->
-        <header-file src="src/ios/MQTTKit/MQTTKit.h"></header-file>
+        <header-file src="src/ios/MQTTKit.h"></header-file>
         <source-file src="src/ios/libMQTTKit.a" framework="true"></source-file>
     </platform>
 </plugin>

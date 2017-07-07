@@ -20,6 +20,9 @@
     int port = [params objectForKey:@"port"];
     NSString *username = [params objectForKey:@"username"];
     NSString *password = [params objectForKey:@"password"];
+    NSString *topic = [params objectForKey:@"topic"];
+    
+    self.currentCallbackId = command.callbackId;
     
     // init MQTTClient
     MQTTClient *client = [[MQTTClient alloc] initWithClientId:clientID];
@@ -31,6 +34,19 @@
     [client setMessageHandler:^(MQTTMessage *message) {
         NSString *text = [message payloadString];
         NSLog(@"received message %@", text);
+        [self successWithCallbackID:self.currentCallbackId withMessage:text];
+    }];
+    
+    [client connectToHost:host completionHandler:^(MQTTConnectionReturnCode code) {
+        if (code == ConnectionAccepted) {
+            // The client is connected when this completion handler is called
+            NSLog(@"client is connected with id %@", clientID);
+            // Subscribe to the topic
+            [client subscribe:topic withCompletionHandler:^(NSArray *grantedQos) {
+                // The client is effectively subscribed to the topic when this completion handler is called
+                NSLog(@"subscribed to topic %@", topic);
+            }];
+        }
     }];
 }
 
