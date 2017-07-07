@@ -1,5 +1,12 @@
 var exec = require('cordova/exec');
 
-exports.coolMethod = function(arg0, success, error) {
-    exec(success, error, "cordova-plugin-messager", "coolMethod", [arg0]);
-};
+module.exports = {
+  // receive message
+  subscribe: function (param, successFn, failureFn) {
+    exec(successFn, failureFn, 'subscribe', [param]);
+  },
+  // publish message
+  publish: function (param, successFn, failureFn) {
+    exec(successFn, failureFn, 'publish', [param]);
+  }
+}
