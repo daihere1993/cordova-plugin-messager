@@ -20,7 +20,7 @@
         </config-file>
 
         <!-- plugin source code -->
-        <source-file src="src/android/MQTTMessager.java" target-dir="src/daihere/cordova/plugin"/>
+        <source-file src="src/android/Messager.java" target-dir="src/daihere/cordova/plugin"/>
 
         <!-- PAHO Library -->
         <source-file src="src/android/libs/paho-client.jar" target-dir="libs"/>
