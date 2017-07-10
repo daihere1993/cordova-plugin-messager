@@ -17,7 +17,7 @@
     
     NSString *clientID = [params objectForKey:@"clientID"];
     NSString *host = [params objectForKey:@"host"];
-    int port = [params objectForKey:@"port"];
+    int port = [[params objectForKey:@"port"] intValue];
     NSString *username = [params objectForKey:@"username"];
     NSString *password = [params objectForKey:@"password"];
     NSString *topic = [params objectForKey:@"topic"];
