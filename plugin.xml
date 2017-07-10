@@ -7,6 +7,25 @@
 
     <!-- android -->
     <platform name="android">
+         <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="Messager">
+                <param name="android-package" value="daihere.cordova.plugin.Messager"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        </config-file>
+
+        <!-- plugin source code -->
+        <source-file src="src/android/MQTTMessager.java" target-dir="src/daihere/cordova/plugin"/>
+
+        <!-- PAHO Library -->
+        <source-file src="src/android/libs/paho-client.jar" target-dir="libs"/>
+        <source-file src="src/android/libs/paho-service.jar" target-dir="libs"/>
+
     </platform>
     
     <!-- ios -->
