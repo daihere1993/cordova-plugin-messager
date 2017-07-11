@@ -16,8 +16,8 @@
     NSDictionary *params = [command.arguments objectAtIndex:0];
     
     NSString *clientID = [params objectForKey:@"clientId"];
-    NSString *host = [params objectForKey:@"host"];
-    int port = [[params objectForKey:@"port"] intValue];
+    NSString *host = [[[params objectForKey:@"host"] componentsSeparatedByString:@":"] objectAtIndex:0];
+    int port = [[[[params objectForKey:@"host"] componentsSeparatedByString:@":"] objectAtIndex:1] intValue];
     NSString *username = [params objectForKey:@"username"];
     NSString *password = [params objectForKey:@"password"];
     NSString *topic = [params objectForKey:@"topic"];
