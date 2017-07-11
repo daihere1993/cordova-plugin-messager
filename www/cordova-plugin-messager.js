@@ -2,7 +2,7 @@ var exec = require('cordova/exec');
 
 module.exports = {
   // connect server
-  connect: function (param, successFn, failCallback) {
+  connect: function (param, successFn, failureFn) {
     exec(successFn, failureFn, 'Messager', 'connect', [param]);
   },
   // receive message
