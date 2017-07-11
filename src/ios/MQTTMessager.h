@@ -10,9 +10,13 @@
 
 @interface MQTTMessager:CDVPlugin
 
-@property (nonatomic, strong) NSString *currentCallbackId;
+@property (nonatomic) BOOL isConnected;
+@property (nonatomic, strong) MQTTClient *client;
+@property (nonatomic, strong) NSDictionary *callbackMap;
 
+- (void)connect:(CDVInvokedUrlCommand *)command;
 - (void)subscribe:(CDVInvokedUrlCommand *)command;
 - (void)publish:(CDVInvokedUrlCommand *)command;
+- (void)disconnect:(CDVInvokedUrlCommand *)command;
 
 @end

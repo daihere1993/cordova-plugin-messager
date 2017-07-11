@@ -12,41 +12,57 @@
 
 #pragma marg "API"
 
-- (void)subscribe:(CDVInvokedUrlCommand *)command {
+- (void)connect:(CDVInvokedUrlCommand *)command {
     NSDictionary *params = [command.arguments objectAtIndex:0];
-    
-    NSString *clientID = [params objectForKey:@"clientId"];
+    NSString *clientId = [params objectForKey:@"clientId"];
     NSString *host = [[[params objectForKey:@"host"] componentsSeparatedByString:@":"] objectAtIndex:0];
     int port = [[[[params objectForKey:@"host"] componentsSeparatedByString:@":"] objectAtIndex:1] intValue];
     NSString *username = [params objectForKey:@"username"];
     NSString *password = [params objectForKey:@"password"];
-    NSString *topic = [params objectForKey:@"topic"];
-    
-    self.currentCallbackId = command.callbackId;
     
     // init MQTTClient
-    MQTTClient *client = [[MQTTClient alloc] initWithClientId:clientID];
-    [client setPort:port];
-    [client setUsername:username];
-    [client setPassword:password];
+    self.client = [[MQTTClient alloc] initWithClientId:clientId];
+    [self.client setPort:port];
+    [self.client setUsername:username];
+    [self.client setPassword:password];
     
-    // define the handler that will be called when MQTT messages are received by the client
-    [client setMessageHandler:^(MQTTMessage *message) {
-        NSString *text = [message payloadString];
-        NSLog(@"received message %@", text);
-        [self successWithCallbackID:self.currentCallbackId withMessage:text];
-    }];
-    
-    [client connectToHost:host completionHandler:^(MQTTConnectionReturnCode code) {
+    [self.client connectToHost:host completionHandler:^(MQTTConnectionReturnCode code) {
         if (code == ConnectionAccepted) {
             // The client is connected when this completion handler is called
-            NSLog(@"client is connected with id %@", clientID);
+            NSLog(@"client is connected with id %@", clientId);
             // Subscribe to the topic
-            [client subscribe:topic withCompletionHandler:^(NSArray *grantedQos) {
-                // The client is effectively subscribed to the topic when this completion handler is called
-                NSLog(@"subscribed to topic %@", topic);
-            }];
+            self.isConnected = YES;
         }
+    }];
+}
+
+- (void)subscribe:(CDVInvokedUrlCommand *)command {
+    NSDictionary *params = [command.arguments objectAtIndex:0];
+    
+    NSString *topic = [params objectForKey:@"topic"];
+    
+    // save topic: callbackId
+    [self.callbackMap setValue:command.callbackId forKey:topic];
+    
+    __weak MQTTMessager *weakSelf = self;
+    [self.client setMessageHandler:^(MQTTMessage *message) {
+        NSString *text = [message payloadString];
+        [weakSelf successWithCallbackID:[weakSelf.callbackMap objectForKey:message.topic] withMessage:text];
+    }];
+    
+    if (self.isConnected) {
+        [self.client subscribe:topic withCompletionHandler:^(NSArray *grantedQos) {
+            // The client is effectively subscribed to the topic when this completion handler is called
+            NSLog(@"subscribed to topic %@", topic);
+        }];
+    } else {
+        [self failWithCallbackID:[self.callbackMap objectForKey:topic] withMessage:@"链接失败"];
+    }
+}
+
+- (void)disconnect:(CDVInvokedUrlCommand *)command {
+    [self.client disconnectWithCompletionHandler:^(NSUInteger code) {
+        NSLog(@"MQTT is disconnected");
     }];
 }
 
