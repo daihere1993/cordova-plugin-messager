@@ -15,7 +15,7 @@
 - (void)subscribe:(CDVInvokedUrlCommand *)command {
     NSDictionary *params = [command.arguments objectAtIndex:0];
     
-    NSString *clientID = [params objectForKey:@"clientID"];
+    NSString *clientID = [params objectForKey:@"clientId"];
     NSString *host = [params objectForKey:@"host"];
     int port = [[params objectForKey:@"port"] intValue];
     NSString *username = [params objectForKey:@"username"];
