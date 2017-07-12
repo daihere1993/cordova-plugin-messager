@@ -13,7 +13,6 @@
 @property (nonatomic, strong) MQTTClient *client;
 @property (nonatomic, strong) NSMutableDictionary *callbackMap;
 
-- (void)connect:(CDVInvokedUrlCommand *)command;
 - (void)subscribe:(CDVInvokedUrlCommand *)command;
 - (void)publish:(CDVInvokedUrlCommand *)command;
 - (void)disconnect:(CDVInvokedUrlCommand *)command;
