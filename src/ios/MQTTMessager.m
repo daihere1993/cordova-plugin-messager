@@ -20,18 +20,21 @@
     NSString *username = [params objectForKey:@"username"];
     NSString *password = [params objectForKey:@"password"];
     
+    self.callbackMap = [NSMutableDictionary dictionary];
+    
     // init MQTTClient
     self.client = [[MQTTClient alloc] initWithClientId:clientId];
     [self.client setPort:port];
     [self.client setUsername:username];
     [self.client setPassword:password];
-    
+    __weak MQTTMessager *weakSelf = self;
     [self.client connectToHost:host completionHandler:^(MQTTConnectionReturnCode code) {
         if (code == ConnectionAccepted) {
             // The client is connected when this completion handler is called
             NSLog(@"client is connected with id %@", clientId);
             // Subscribe to the topic
-            self.isConnected = YES;
+            weakSelf.isConnected = YES;
+            [weakSelf successWithCallbackID:command.callbackId];
         }
     }];
 }
@@ -42,12 +45,12 @@
     NSString *topic = [params objectForKey:@"topic"];
     
     // save topic: callbackId
-    [self.callbackMap setValue:command.callbackId forKey:topic];
+    [self.callbackMap setObject:command.callbackId forKey:topic];
     
     __weak MQTTMessager *weakSelf = self;
     [self.client setMessageHandler:^(MQTTMessage *message) {
         NSString *text = [message payloadString];
-        [weakSelf successWithCallbackID:[weakSelf.callbackMap objectForKey:message.topic] withMessage:text];
+        [weakSelf successWithCallbackID:[weakSelf.callbackMap objectForKey:message.topic] withMessage:text keepCallback:YES];
     }];
     
     if (self.isConnected) {
@@ -73,11 +76,12 @@
 #pragma mark "Private methods"
 
 - (void)successWithCallbackID:(NSString *)callbackID {
-    [self successWithCallbackID:callbackID withMessage:@"OK"];
+    [self successWithCallbackID:callbackID withMessage:@"OK" keepCallback:NO];
 }
 
-- (void)successWithCallbackID:(NSString *)callbackID withMessage:(NSString *)message {
+- (void)successWithCallbackID:(NSString *)callbackID withMessage:(NSString *)message keepCallback:(BOOL)keepCallback {
     CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
+    [commandResult setKeepCallbackAsBool:keepCallback];
     [self.commandDelegate sendPluginResult:commandResult callbackId:callbackID];
 }
 

@@ -12,7 +12,7 @@
 
 @property (nonatomic) BOOL isConnected;
 @property (nonatomic, strong) MQTTClient *client;
-@property (nonatomic, strong) NSDictionary *callbackMap;
+@property (nonatomic, strong) NSMutableDictionary *callbackMap;
 
 - (void)connect:(CDVInvokedUrlCommand *)command;
 - (void)subscribe:(CDVInvokedUrlCommand *)command;
