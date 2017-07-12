@@ -10,7 +10,6 @@
 
 @interface MQTTMessager:CDVPlugin
 
-@property (nonatomic) BOOL isConnected;
 @property (nonatomic, strong) MQTTClient *client;
 @property (nonatomic, strong) NSMutableDictionary *callbackMap;
 
