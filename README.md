@@ -1,6 +1,6 @@
 # cordova-plugin-messager
 
-This is an information tranfer cordova plugin base on MQTT.
+This is an information transfer cordova plugin base on MQTT.
 
 # Feature
 
