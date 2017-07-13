@@ -1,7 +1,7 @@
 {
   "name": "cordova-plugin-messager",
   "version": "1.0.0",
-  "description": "A cordova plugin about message subscribe in app",
+  "description": "This is an information tranfer cordova plugin base on MQTT.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
