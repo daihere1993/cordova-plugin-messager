@@ -88,7 +88,7 @@ public class Messager extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("subscribe")) {
+        if (action.equals("subscribeTopic")) {
             subscribe(args, callbackContext);
             return true;
         }

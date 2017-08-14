@@ -2,14 +2,20 @@
 <plugin id="cordova-plugin-messager" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>cordova-plugin-messager</name>
     <js-module name="cordova-plugin-messager" src="www/cordova-plugin-messager.js">
-        <clobbers target="cordova.plugins.messager" />
+        <clobbers target="CDVMessager" />
     </js-module>
+
+    <engines>
+        <engine name="cordova" version=">=7.0.0"/>
+        <engine name="cordova-android" version=">=6.2.1"/>
+        <engine name="cordova-ios" version=">=4.4.0"/>
+    </engines>
 
     <!-- android -->
     <platform name="android">
          <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="Messager">
-                <param name="android-package" value="daihere.cordova.plugin.Messager"/>
+            <feature name="CDVMessager">
+                <param name="android-package" value="daihere.cordova.plugin.CDVMessager"/>
             </feature>
         </config-file>
 
@@ -20,29 +26,33 @@
         </config-file>
 
         <!-- plugin source code -->
-        <source-file src="src/android/Messager.java" target-dir="src/daihere/cordova/plugin"/>
+        <source-file src="src/android/CDVMessager.java" target-dir="src/daihere/cordova/plugin"/>
 
         <!-- PAHO Library -->
         <source-file src="src/android/libs/paho-client.jar" target-dir="libs"/>
         <source-file src="src/android/libs/paho-service.jar" target-dir="libs"/>
-
     </platform>
     
     <!-- ios -->
     <platform name="ios">
         <config-file parent="/*" target="config.xml">
-            <feature name="Messager">
-                <param name="ios-package" value="MQTTMessager"/>
-                <param name="onload" value="true"/>
+            <feature name="CDVMessager">
+                <param name="ios-package" value="CDVMessager"/>
             </feature>
         </config-file>
 
         <!-- plugin source code -->
-        <header-file src="src/ios/MQTTMessager.h"/>
-        <source-file src="src/ios/MQTTMessager.m"/>
+        <header-file src="src/ios/CDVMessager.h"/>
+        <header-file src="src/ios/AppDelegate+notification.h"/>
+        <source-file src="src/ios/CDVMessager.m"/>
+        <source-file src="src/ios/AppDelegate+notification.m"/>
 
         <!-- MQTTKit Library -->
-        <header-file src="src/ios/MQTTKit.h"/>
-        <source-file src="src/ios/libMQTTKit.a" framework="true"/>
+        <!-- <header-file src="src/ios/MQTTKit.h"/> -->
+        <!-- <source-file src="src/ios/libMQTTKit.a" framework="true"/> -->
+
+        <framework src="MQTTClient" type="podspec" spec="~> 0.9.7"/>  
+
+         <!-- <framework src="FirebaseMessaging" type="podspec" spec="~> 2.0.0"/>  -->
     </platform>
 </plugin>
