@@ -19,80 +19,142 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Created by daihere on 15/08/2017.
+ */
 
-public class Messager extends CordovaPlugin {
-    protected MqttClient client;
+public class CDVMessager extends CordovaPlugin {
 
-    protected void subscribe(CordovaArgs args, final CallbackContext callbackContext) {
-        String hostHeader = "tcp://";
-        String topic = "";
-        String clientId = "";
-        String host = "";
-        String username = "";
-        String password = "";
-        final Map<String, Object> callbackContextMap = new HashMap<String, Object>();
+    private MqttClient client;
+    private CallbackContext currentCallbackContext;
+
+    private void init(CordovaArgs args, final  CallbackContext callbackContext) {
+        currentCallbackContext = callbackContext;
+        String hostHeader = "tcp://",
+                clientId = "",
+                host = "",
+                port = "",
+                username = "",
+                password = "";
         final JSONObject params;
         try {
             params = args.getJSONObject(0);
-            topic = params.getString("topic");
-            clientId = params.getString("clientId");
-            host = hostHeader.concat(params.getString("host"));
-            username = params.getString("username");
-            password = params.getString("password");
-            callbackContextMap.put(topic, callbackContext);
+            if (!params.isNull("clientId")) {
+                clientId = params.getString("clientId");
+            }
+            if (!params.isNull("port")) {
+                port = params.getString("port");
+            }
+            host = hostHeader + params.getString("host") + ":" + port;
+            if (!params.isNull("username")) {
+                username = params.getString("username");
+            }
+            if (!params.isNull("password")) {
+                password = params.getString("password");
+            }
         } catch (JSONException e) {
-            callbackContext.error("参数格式错误");
+            callbackContext.error("Parameter error!");
         }
 
         try {
-            if (client == null) {
-                client = new MqttClient(host, clientId, new MemoryPersistence());
-                MqttConnectOptions options = new MqttConnectOptions();
+            client = new MqttClient(host, clientId, new MemoryPersistence());
+            MqttConnectOptions options = new MqttConnectOptions();
+            if (!username.trim().equals("")) {
                 options.setUserName(username);
-                options.setPassword(password.toCharArray());
-                options.setCleanSession(true);
-                options.setConnectionTimeout(10);
-                options.setKeepAliveInterval(20);
-                client.connect(options);
-            } else if (client.isConnected()) {
-                client.setCallback(new MqttCallback() {
-                    @Override
-                    public void connectionLost(Throwable cause) {
-                        callbackContext.error("连接失败");
-                    }
-
-                    @Override
-                    public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                        CallbackContext callbackContext2 = (CallbackContext)callbackContextMap.get(s);
-                        String msg = new String(mqttMessage.getPayload(), "UTF-8");
-                        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, msg);
-                        pluginResult.setKeepCallback(true);
-
-                        callbackContext2.sendPluginResult(pluginResult);
-                    }
-
-                    @Override
-                    public void deliveryComplete(IMqttDeliveryToken token) {
-                        System.out.println("deliveryComplete-------" + token.isComplete());
-                    }
-                });
-                client.subscribe(topic, 1);
-            } else {
-                callbackContext.error("未连接上消息服务器");
             }
+            options.setPassword(password.toCharArray());
+            options.setCleanSession(true);
+            options.setConnectionTimeout(1);
+            options.setKeepAliveInterval(20);
+
+            client.setCallback(new MqttCallback() {
+                @Override
+                public void connectionLost(Throwable cause) {
+                    // 连接丢失后，一般在这里面进行重连
+                    System.out.println("connectionLost----------");
+                }
+
+                @Override
+                public void messageArrived(final String s, MqttMessage mqttMessage) throws Exception {
+                    final String msg = new String(mqttMessage.getPayload(), "UTF-8");
+                    HashMap<String, String> result = new HashMap<String, String>(){{
+                        put("type", s);
+                        put("value", msg);
+                    }};
+                    successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+                }
+
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken token) {
+                    //publish后会执行到这里
+                    System.out.println("deliveryComplete-------" + token.isComplete());
+                }
+            });
+            connect(options);
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
 
+    private void subscribe(CordovaArgs args, CallbackContext callbackContext) {
+        String topic = "";
+        try {
+            topic = args.getString(0);
+        } catch (JSONException e) {
+            currentCallbackContext.error("Parameter error!");
+        }
+
+        if (client != null) {
+            try {
+                client.subscribe(topic, 1);
+                System.out.println("Subscribe topic: " + topic + " success!");
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void successWithCallbackContext(CallbackContext callbackContext, String withMessage, Boolean keepCallback ) {
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, withMessage);
+        pluginResult.setKeepCallback(keepCallback);
+        callbackContext.sendPluginResult(pluginResult);
+    }
+
+    private void successWithCallbackContext(CallbackContext callbackContext, JSONObject withObject, Boolean keepCallback) {
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, withObject);
+        pluginResult.setKeepCallback(keepCallback);
+        callbackContext.sendPluginResult(pluginResult);
     }
 
     @Override
-    public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("subscribeTopic")) {
+    public boolean execute(String action, final CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
+        if (action.equals("subscribe")) {
             subscribe(args, callbackContext);
+            return true;
+        } else if (action.equals("init")) {
+            init(args, callbackContext);
             return true;
         }
 
         return false;
+    }
+
+    private void connect(final  MqttConnectOptions options) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    client.connect(options);
+                    System.out.println("Connect mqtt server success!");
+                    HashMap<String, String> result = new HashMap<String, String>(){{
+                        put("type", "connectedMqttServer");
+                        put("value", "");
+                    }};
+                    successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+                } catch (Exception e) {
+                    currentCallbackContext.error("Fail to connect mqtt server!");
+                }
+            }
+        }).start();
     }
 }
