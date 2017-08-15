@@ -26,8 +26,8 @@
     
     // 连接MQTT消息服务器
     MQTTCFSocketTransport *transport = [[MQTTCFSocketTransport alloc] init];
-    transport.host = [[[para objectForKey:@"host"] componentsSeparatedByString:@":"] objectAtIndex:0];
-    transport.port = [[[[para objectForKey:@"host"] componentsSeparatedByString:@":"] objectAtIndex:1] intValue];
+    transport.host = [para objectForKey:@"host"];
+    transport.port = [[para objectForKey:@"port"] intValue] | 1883;
     
     self.session = [[MQTTSession alloc] init];
     self.session.transport = transport;
