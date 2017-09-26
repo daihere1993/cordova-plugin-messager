@@ -27,20 +27,22 @@
     // 连接MQTT消息服务器
     MQTTCFSocketTransport *transport = [[MQTTCFSocketTransport alloc] init];
     transport.host = [para objectForKey:@"host"];
-    transport.port = [[para objectForKey:@"port"] intValue] | 1883;
+    transport.port = [[para objectForKey:@"port"] intValue];
     
     self.session = [[MQTTSession alloc] init];
     self.session.transport = transport;
-    self.session.userName = [para objectForKey:@"userName"];
+    self.session.userName = [para objectForKey:@"username"];
     self.session.password = [para objectForKey:@"password"];
     self.session.clientId = [para objectForKey:@"clientId"];
     self.session.delegate = self;
     __weak CDVMessager *mySelf = self;
     self.session.connectionHandler = ^(MQTTSessionEvent event) {
-        NSLog(@"Connect successful!");
-        [mySelf successWithCallbackID:command.callbackId withMessage:[NSString stringWithFormat:@"%li",event]];
+        if (event == MQTTSessionEventConnected) {
+            NSLog(@"Connect successful!");
+            [mySelf successWithCallbackID:command.callbackId withMessage:[NSString stringWithFormat:@"%li",event]];
+        }
     };
-    [self.session connectAndWaitTimeout:30];
+    [self.session connectAndWaitTimeout:5];
     
 }
 

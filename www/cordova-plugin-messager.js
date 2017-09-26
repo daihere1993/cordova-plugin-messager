@@ -23,14 +23,14 @@ var CDVMessager = (function CDVMessager () {
         return;
       }
       _this.handlers[result.type](result.value);
-    }
+    };
     
     var failCallback = function (error) {
       if (!_this.handlers.error) {
         return;
       }
       _this.handlers.error(error);
-    }
+    };
 
     // 连接mqtt服务器，注册远程消息推送
     exec(successCallback, failCallback, 'CDVMessager', 'init', [options]);

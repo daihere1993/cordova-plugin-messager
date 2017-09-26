@@ -50,9 +50,7 @@
         <!-- MQTTKit Library -->
         <!-- <header-file src="src/ios/MQTTKit.h"/> -->
         <!-- <source-file src="src/ios/libMQTTKit.a" framework="true"/> -->
-
-        <framework src="MQTTClient" type="podspec" spec="~> 0.9.7"/>  
-
-         <!-- <framework src="FirebaseMessaging" type="podspec" spec="~> 2.0.0"/>  -->
+  
+        <framework src="MQTTClient" type="podspec" spec="~> 0.9.9"/>  
     </platform>
 </plugin>
