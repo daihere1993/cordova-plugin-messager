@@ -1,10 +1,10 @@
-//
-//  MQTTMessager.h
-//  MQTTExample
-//
-//  Created by daihere on 07/07/2017.
-//  Copyright © 2017 jmesnil.net. All rights reserved.
-//
+/*
+ * @Author: 玖叁(N.T) 
+ * @Date: 2017-10-13 09:51:05 
+ * @Last Modified by:   玖叁(N.T) 
+ * @Last Modified time: 2017-10-13 09:51:05 
+ */
+
 #import <Cordova/CDV.h>
 #import "MQTTClient.h"
 
@@ -17,8 +17,5 @@
 
 - (void)subscribe:(CDVInvokedUrlCommand *)command;
 - (void)init:(CDVInvokedUrlCommand *)command;
-- (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSString *)deviceToken;
-- (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
-- (void)notificationReceived:(NSDictionary *)info isLaunch:(BOOL)isLaunch;
 
 @end

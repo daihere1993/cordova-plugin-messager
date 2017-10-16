@@ -43,13 +43,7 @@
 
         <!-- plugin source code -->
         <header-file src="src/ios/CDVMessager.h"/>
-        <header-file src="src/ios/AppDelegate+notification.h"/>
         <source-file src="src/ios/CDVMessager.m"/>
-        <source-file src="src/ios/AppDelegate+notification.m"/>
-
-        <!-- MQTTKit Library -->
-        <!-- <header-file src="src/ios/MQTTKit.h"/> -->
-        <!-- <source-file src="src/ios/libMQTTKit.a" framework="true"/> -->
   
         <framework src="MQTTClient" type="podspec" spec="~> 0.9.9"/>  
     </platform>
