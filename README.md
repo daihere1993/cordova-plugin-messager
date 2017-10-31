@@ -14,30 +14,50 @@ cordova plugin add cordova-plugin-messager or ionic plugin add cordova-plugin-me
 
 # Usage
 
-## Subscribe topic
-
 ```Javascript
-var params = {
-  clientId: 'test', // just a unique string
-  host: 'test.mosquitto.org:1883',
-  username: 'admin', // if you hava
-  password: 'password', // if you hava
-  topic: 'daihere/test'
-}
-cordova.plugins.messager.subscribe(params, function (msg) {
-  alert(msg);
-}, function (error)  {
-  console.log(error);
+var messager = new CDVMessager({
+  clientId: 'clientId', // required
+  host: 'Your server host', // required
+  port: 'Your server port', // required
+  username: 'Your server username', // optional
+  password: 'Your server password' // optional
 });
+
+// subscribe topic
+var topic = 'test/topic';
+messager.subscribe(topic);
+// listen the 'receivedMqttMsg_<topic>' event
+messager.on('receivedMqttMsg_' + topic, function (msg) {
+  alert(msg);
+});
+// cancelSubscribe topic
+messager.cancelSubscribe(topic);
 ```
 
 # Example
 
-There is a test host ```test.mosquitto.org:1883```. 
+## init and subscribe topice
 
-First, you should install ```mosquitto```(In mac: ```brew install mosquitto```, another sys pleace Google)
+```Javascript
+var messager = new CDVMessager({
+  clientId: 'test',
+  host: 'test.mosquitto.org',
+  port: '1883'
+});
 
-Then, launch you app and execute ```mosquitto_pub -h test.mosquitto.org -p 1883 -t daihere/test -m tes3```  in you terminal that will publish a message ```test3```, ```daihere/test``` is you subscribe topic.
+var topic = 'nt/test1';
+messager.subscribe(topic);
+messager.on('receivedMqttMsg_' + topic, function (msg) {
+  alert(msg);
+});
+```
+
+## publish message in terminal
+
+1. First, you need install ```mosquitto```.
+2. Launch you app.
+3. Execute ```mosquitto_pub -h test.mosquitto.org -p 1883 -t nt/test1 -m tes1``` in the terminal, that will publish a message.
+4. Will alert a message ```test1```.
 
 # LICENSE
 

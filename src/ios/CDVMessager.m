@@ -1,8 +1,8 @@
 /*
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-13 09:50:45 
- * @Last Modified by:   玖叁(N.T) 
- * @Last Modified time: 2017-10-13 09:50:45 
+ * @Last Modified by: 玖叁(N.T)
+ * @Last Modified time: 2017-10-31 10:45:03
  */
 
 #import "CDVMessager.h"
@@ -47,6 +47,14 @@
                 NSLog(@"Subscription successfull! Granted Qos: %@", gQoss);
             }
         }];
+    }
+}
+
+- (void)unsubscribe:(CDVInvokedUrlCommand *)command {
+    NSString *topic = [command.arguments objectAtIndex:0];
+    
+    if (self.session != nil) {
+        [self.session unsubscribeTopic:topic];
     }
 }
 

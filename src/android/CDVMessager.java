@@ -1,3 +1,9 @@
+/*
+ * @Author: 玖叁(N.T) 
+ * @Date: 2017-10-31 14:57:21 
+ * @Last Modified by:   玖叁(N.T) 
+ * @Last Modified time: 2017-10-31 14:57:21 
+ */
 package daihere.cordova.plugin;
 
 import org.apache.cordova.CordovaArgs;
@@ -17,11 +23,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by daihere on 15/08/2017.
- */
 
 public class CDVMessager extends CordovaPlugin {
 
@@ -39,19 +40,11 @@ public class CDVMessager extends CordovaPlugin {
         final JSONObject params;
         try {
             params = args.getJSONObject(0);
-            if (!params.isNull("clientId")) {
-                clientId = params.getString("clientId");
-            }
-            if (!params.isNull("port")) {
-                port = params.getString("port");
-            }
+            clientId = params.has("clientId") ? params.getString("clientId") : "no client id";
+            port = params.has("port") ? params.getString("port") : "";
             host = hostHeader + params.getString("host") + ":" + port;
-            if (!params.isNull("username")) {
-                username = params.getString("username");
-            }
-            if (!params.isNull("password")) {
-                password = params.getString("password");
-            }
+            username = params.has("username") ? params.getString("username") : "";
+            password = params.has("password") ? params.getString("password") : "";
         } catch (JSONException e) {
             callbackContext.error("Parameter error!");
         }
@@ -78,7 +71,7 @@ public class CDVMessager extends CordovaPlugin {
                 public void messageArrived(final String s, MqttMessage mqttMessage) throws Exception {
                     final String msg = new String(mqttMessage.getPayload(), "UTF-8");
                     HashMap<String, String> result = new HashMap<String, String>(){{
-                        put("type", s);
+                        put("type", "receivedMqttMsg_" + s);
                         put("value", msg);
                     }};
                     successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
@@ -114,6 +107,24 @@ public class CDVMessager extends CordovaPlugin {
         }
     }
 
+    private void unsubscribe(CordovaArgs args, CallbackContext callbackContext) {
+        String topic = "";
+        try {
+            topic = args.getString(0);
+        } catch (JSONException e) {
+            currentCallbackContext.error("Parameter error!");
+        }
+
+        if (client != null) {
+            try {
+                client.unsubscribe(topic);
+                System.out.println("Unsubscribe topic: " + topic + " success!");
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void successWithCallbackContext(CallbackContext callbackContext, String withMessage, Boolean keepCallback ) {
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, withMessage);
         pluginResult.setKeepCallback(keepCallback);
@@ -134,6 +145,8 @@ public class CDVMessager extends CordovaPlugin {
         } else if (action.equals("init")) {
             init(args, callbackContext);
             return true;
+        } else if (action.equals("unsubscribe")) {
+            unsubscribe(args, callbackContext);
         }
 
         return false;

@@ -1,8 +1,8 @@
 /*
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-13 09:51:05 
- * @Last Modified by:   玖叁(N.T) 
- * @Last Modified time: 2017-10-13 09:51:05 
+ * @Last Modified by: 玖叁(N.T)
+ * @Last Modified time: 2017-10-31 10:45:21
  */
 
 #import <Cordova/CDV.h>
@@ -16,6 +16,7 @@
 @property (nonatomic, strong) NSDictionary *notificationMessage;
 
 - (void)subscribe:(CDVInvokedUrlCommand *)command;
+- (void)unsubscribe:(CDVInvokedUrlCommand *)command;
 - (void)init:(CDVInvokedUrlCommand *)command;
 
 @end

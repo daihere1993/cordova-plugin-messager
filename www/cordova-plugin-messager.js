@@ -46,7 +46,7 @@ var CDVMessager = (function CDVMessager () {
   }, {
     key: 'cancelSubscribe',
     value: function (topic, successCallback, failCallback) {
-      exec(successCallback, failCallback, 'CDVMessager', 'cancelSubscribe', [topic]);
+      exec(successCallback, failCallback, 'CDVMessager', 'unsubscribe', [topic]);
     }
   }, {
     key: 'on',
