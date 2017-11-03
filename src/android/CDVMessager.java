@@ -1,8 +1,8 @@
 /*
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-31 14:57:21 
- * @Last Modified by:   玖叁(N.T) 
- * @Last Modified time: 2017-10-31 14:57:21 
+ * @Last Modified by: 玖叁(N.T)
+ * @Last Modified time: 2017-11-03 16:57:01
  */
 package daihere.cordova.plugin;
 
@@ -59,6 +59,7 @@ public class CDVMessager extends CordovaPlugin {
             options.setCleanSession(true);
             options.setConnectionTimeout(1);
             options.setKeepAliveInterval(20);
+            client.isConnected();
 
             client.setCallback(new MqttCallback() {
                 @Override
@@ -84,6 +85,20 @@ public class CDVMessager extends CordovaPlugin {
                 }
             });
             connect(options);
+
+            if (client.isConnected()) {
+                HashMap<String, String> result = new HashMap<String, String>(){{
+                    put("type", "connectSuccess");
+                    put("value", "Connect success.");
+                }};
+                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+            } else {
+                HashMap<String, String> result = new HashMap<String, String>(){{
+                    put("type", "connectFail");
+                    put("value", "Connect Fail.");
+                }};
+                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+            }
         } catch (MqttException e) {
             e.printStackTrace();
         }
