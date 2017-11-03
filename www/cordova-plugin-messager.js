@@ -15,9 +15,12 @@ function _creatClass (Constructor, protoProps) {
 
 var CDVMessager = (function CDVMessager () {
 
-  function CDVMessager (options) {
+  function CDVMessager (options, connectSuccessCb, connectFailCb) {
     var _this = this;
-    this.handlers = {};
+    this.handlers = {
+      connectSuccess: connectSuccessCb,
+      connectFail: connectFailCb
+    };
     var successCallback = function (result) {
       if (!result || !result.type || !_this.handlers[result.type]) {
         return;

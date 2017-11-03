@@ -2,7 +2,7 @@
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-13 09:50:45 
  * @Last Modified by: 玖叁(N.T)
- * @Last Modified time: 2017-10-31 10:45:03
+ * @Last Modified time: 2017-11-03 15:41:45
  */
 
 #import "CDVMessager.h"
@@ -26,13 +26,23 @@
     self.session.delegate = self;
     __weak CDVMessager *mySelf = self;
     self.session.connectionHandler = ^(MQTTSessionEvent event) {
+        NSDictionary *result;
         if (event == MQTTSessionEventConnected) {
             NSLog(@"Connect successful!");
-            [mySelf successWithCallbackID:command.callbackId withMessage:[NSString stringWithFormat:@"%li",event]];
+            result = @{
+                       @"type": @"connectSuccess",
+                       @"value": @"Connect success."
+                       };
+            [mySelf successWithCallbackID:mySelf.callbackId withDic:result];
+        } else {
+            result = @{
+                       @"type": @"connectFail",
+                       @"value": @"Connect fail."
+                       };
+            [mySelf successWithCallbackID:mySelf.callbackId withDic:result];
         }
     };
     [self.session connectAndWaitTimeout:5];
-    
 }
 
 - (void)subscribe:(CDVInvokedUrlCommand *)command {
