@@ -2,7 +2,7 @@
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-31 14:57:21 
  * @Last Modified by: 玖叁(N.T)
- * @Last Modified time: 2017-11-03 16:57:01
+ * @Last Modified time: 2017-11-04 14:48:08
  */
 package daihere.cordova.plugin;
 
@@ -49,6 +49,24 @@ public class CDVMessager extends CordovaPlugin {
             callbackContext.error("Parameter error!");
         }
 
+        if (client != null) {
+            if (client.isConnected()) {
+                HashMap<String, String> result = new HashMap<String, String>(){{
+                    put("type", "connectSuccess");
+                    put("value", "Connect success.");
+                }};
+                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+            } else {
+                HashMap<String, String> result = new HashMap<String, String>(){{
+                    put("type", "connectFail");
+                    put("value", "Connect Fail.");
+                }};
+                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+            }
+
+            return;
+        }
+
         try {
             client = new MqttClient(host, clientId, new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
@@ -86,6 +104,13 @@ public class CDVMessager extends CordovaPlugin {
             });
             connect(options);
 
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             if (client.isConnected()) {
                 HashMap<String, String> result = new HashMap<String, String>(){{
                     put("type", "connectSuccess");
@@ -99,6 +124,7 @@ public class CDVMessager extends CordovaPlugin {
                 }};
                 successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
             }
+
         } catch (MqttException e) {
             e.printStackTrace();
         }
