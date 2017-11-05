@@ -40,6 +40,7 @@
                        @"value": @"Connect fail."
                        };
             [mySelf successWithCallbackID:mySelf.callbackId withDic:result];
+            [mySelf.session connect];
         }
     };
     [self.session connectAndWaitTimeout:5];
