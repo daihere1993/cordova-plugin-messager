@@ -2,7 +2,7 @@
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-31 14:57:21 
  * @Last Modified by: 玖叁(N.T)
- * @Last Modified time: 2017-11-06 10:41:27
+ * @Last Modified time: 2017-11-06 19:59:17
  */
 package daihere.cordova.plugin;
 
@@ -24,10 +24,49 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.util.HashMap;
 
+import android.os.Handler;
+
+
 public class CDVMessager extends CordovaPlugin {
 
     private MqttClient client;
     private CallbackContext currentCallbackContext;
+    private Runnable runnable;
+    private Handler handler = new Handler();
+    private int count = 0;
+
+    private  void connectCallback() {
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (count > 5) {
+                    handler.removeCallbacks(runnable);
+                    HashMap<String, String> result = new HashMap<String, String>(){{
+                        put("type", "connectFail");
+                        put("value", "Connect Fail.");
+                    }};
+                    count = 0;
+                    successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+                    return;
+                }
+
+                count++;
+                if (client.isConnected()) {
+                    HashMap<String, String> result = new HashMap<String, String>(){{
+                        put("type", "connectSuccess");
+                        put("value", "Connect success.");
+                    }};
+                    count = 0;
+                    successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
+                    handler.removeCallbacks(runnable);
+                } else {
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        };
+
+        handler.postDelayed(runnable, 1000);
+    }
 
     private void init(CordovaArgs args, final  CallbackContext callbackContext) {
         currentCallbackContext = callbackContext;
@@ -49,24 +88,6 @@ public class CDVMessager extends CordovaPlugin {
             callbackContext.error("Parameter error!");
         }
 
-        if (client != null) {
-            if (client.isConnected()) {
-                HashMap<String, String> result = new HashMap<String, String>(){{
-                    put("type", "connectSuccess");
-                    put("value", "Connect success.");
-                }};
-                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
-            } else {
-                HashMap<String, String> result = new HashMap<String, String>(){{
-                    put("type", "connectFail");
-                    put("value", "Connect Fail.");
-                }};
-                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
-            }
-
-            return;
-        }
-
         try {
             client = new MqttClient(host, clientId, new MemoryPersistence());
             final MqttConnectOptions options = new MqttConnectOptions();
@@ -84,9 +105,11 @@ public class CDVMessager extends CordovaPlugin {
                 public void connectionLost(Throwable cause) {
                     // 连接丢失后，在这里面进行重连
                     try {
-                        client.connect(options);
                         System.out.println("connectionLost----------");
+                        client.connect(options);
+                        connectCallback();
                     } catch (MqttException e) {
+                        connectCallback();
                         e.printStackTrace();
                     }
                 }
@@ -108,27 +131,7 @@ public class CDVMessager extends CordovaPlugin {
                 }
             });
             connect(options);
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            if (client.isConnected()) {
-                HashMap<String, String> result = new HashMap<String, String>(){{
-                    put("type", "connectSuccess");
-                    put("value", "Connect success.");
-                }};
-                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
-            } else {
-                HashMap<String, String> result = new HashMap<String, String>(){{
-                    put("type", "connectFail");
-                    put("value", "Connect Fail.");
-                }};
-                successWithCallbackContext(currentCallbackContext, new JSONObject(result), true);
-            }
+            connectCallback();
 
         } catch (MqttException e) {
             e.printStackTrace();
