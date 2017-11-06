@@ -2,7 +2,7 @@
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-31 14:57:21 
  * @Last Modified by: 玖叁(N.T)
- * @Last Modified time: 2017-11-04 14:48:08
+ * @Last Modified time: 2017-11-06 10:41:27
  */
 package daihere.cordova.plugin;
 
@@ -69,7 +69,7 @@ public class CDVMessager extends CordovaPlugin {
 
         try {
             client = new MqttClient(host, clientId, new MemoryPersistence());
-            MqttConnectOptions options = new MqttConnectOptions();
+            final MqttConnectOptions options = new MqttConnectOptions();
             if (!username.trim().equals("")) {
                 options.setUserName(username);
             }
@@ -82,8 +82,13 @@ public class CDVMessager extends CordovaPlugin {
             client.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable cause) {
-                    // 连接丢失后，一般在这里面进行重连
-                    System.out.println("connectionLost----------");
+                    // 连接丢失后，在这里面进行重连
+                    try {
+                        client.connect(options);
+                        System.out.println("connectionLost----------");
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
