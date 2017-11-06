@@ -2,7 +2,7 @@
  * @Author: 玖叁(N.T) 
  * @Date: 2017-10-13 09:50:45 
  * @Last Modified by: 玖叁(N.T)
- * @Last Modified time: 2017-11-03 15:41:45
+ * @Last Modified time: 2017-11-06 10:18:05
  */
 
 #import "CDVMessager.h"
@@ -33,6 +33,9 @@
                        @"type": @"connectSuccess",
                        @"value": @"Connect success."
                        };
+            if (mySelf.currentTopic != nil) {
+                [mySelf _subscribe:mySelf.currentTopic];
+            }
             [mySelf successWithCallbackID:mySelf.callbackId withDic:result];
         } else {
             result = @{
@@ -40,7 +43,9 @@
                        @"value": @"Connect fail."
                        };
             [mySelf successWithCallbackID:mySelf.callbackId withDic:result];
-            [mySelf.session connect];
+            if (event == MQTTSessionEventConnectionError) {
+                [mySelf.session connectAndWaitTimeout:5];
+            }
         }
     };
     [self.session connectAndWaitTimeout:5];
@@ -49,6 +54,11 @@
 - (void)subscribe:(CDVInvokedUrlCommand *)command {
     NSString *topic = [command.arguments objectAtIndex:0];
     
+    self.currentTopic = topic;
+    [self _subscribe:topic];
+}
+
+- (void)_subscribe:(NSString *)topic {
     if (self.session != nil) {
         [self.session subscribeToTopic:topic atLevel:2 subscribeHandler:^(NSError *error, NSArray<NSNumber *> *gQoss) {
             if (error) {
